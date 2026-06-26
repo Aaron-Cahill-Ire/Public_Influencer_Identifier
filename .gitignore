@@ -1,0 +1,4 @@
+node_modules/
+frontend-screenshot.png
+__pycache__/
+*.pyc

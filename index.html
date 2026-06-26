@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Influencer Identifier</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 640px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    p.sub { color: #666; margin-top: 0; }
+    ol#ranking { list-style: none; padding: 0; }
+    ol#ranking li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: rgba(127, 127, 127, 0.06);
+    }
+    .rank { font-weight: 700; margin-right: 0.5rem; }
+    .handle { font-weight: 600; }
+    .score { color: #555; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <h1>Public Influencer Identifier</h1>
+  <p class="sub">Accounts ranked by a naive influence heuristic (reach × engagement).</p>
+  <ol id="ranking"></ol>
+
+  <script>
+    function influenceScore(account) {
+      return account.followers * (1 + account.avgEngagement);
+    }
+
+    function topInfluencers(accounts, limit = 3) {
+      return [...accounts]
+        .sort((a, b) => influenceScore(b) - influenceScore(a))
+        .slice(0, limit);
+    }
+
+    const accounts = [
+      { handle: "@alice", followers: 120000, avgEngagement: 0.03 },
+      { handle: "@bob", followers: 15000, avgEngagement: 0.12 },
+      { handle: "@carol", followers: 500000, avgEngagement: 0.01 },
+    ];
+
+    const list = document.getElementById("ranking");
+    topInfluencers(accounts).forEach((acct, i) => {
+      const li = document.createElement("li");
+      const left = document.createElement("span");
+      left.innerHTML = `<span class="rank">${i + 1}.</span><span class="handle">${acct.handle}</span>`;
+      const score = document.createElement("span");
+      score.className = "score";
+      score.textContent = `score ${Math.round(influenceScore(acct)).toLocaleString()}`;
+      li.append(left, score);
+      list.appendChild(li);
+    });
+  </script>
+</body>
+</html>
