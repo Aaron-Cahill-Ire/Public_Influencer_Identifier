@@ -3,10 +3,26 @@
 import { chromium } from "playwright";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
+import { existsSync } from "node:fs";
 
 const url = pathToFileURL(resolve("index.html")).href;
 
-const browser = await chromium.launch();
+// In this environment Chromium is preinstalled but its build revision may not
+// match the npm-installed Playwright. Prefer the preinstalled binary when the
+// bundled one is absent, so the test runs without `playwright install`.
+const preinstalled = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const launchOpts = {};
+let bundled = null;
+try {
+  bundled = chromium.executablePath();
+} catch {
+  // No bundled browser registered for this Playwright version.
+}
+if ((!bundled || !existsSync(bundled)) && existsSync(preinstalled)) {
+  launchOpts.executablePath = preinstalled;
+}
+
+const browser = await chromium.launch(launchOpts);
 const page = await browser.newPage();
 await page.goto(url);
 
