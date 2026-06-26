@@ -12,3 +12,22 @@ This prints the top-ranked accounts from a sample dataset using a naive
 influence heuristic (follower reach weighted by engagement). The scoring
 logic in `influencer_identifier.py` is placeholder scaffolding meant to be
 replaced with real data sources and a proper model.
+
+## Web frontend
+
+`index.html` renders the same ranking in the browser (no build step — open
+the file directly).
+
+## Tests
+
+A Playwright smoke test loads `index.html`, asserts the ranking order and
+scores, and saves a screenshot:
+
+```bash
+npm install   # installs Playwright (dev dependency)
+npm test
+```
+
+The test prefers a preinstalled Chromium when Playwright's bundled browser
+isn't available, so it runs without `npx playwright install` in most CI
+sandboxes.
